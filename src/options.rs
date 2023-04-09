@@ -1,14 +1,4 @@
-#![feature(convert_float_to_int)]
 use crate::color;
-use bytes::*;
-use libm::modf;
-use math::*;
-use std::cmp::max;
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::convert::FloatToInt;
-use std::f64;
-use std::f64::consts::PI;
 use std::fmt;
 use std::string::String;
 

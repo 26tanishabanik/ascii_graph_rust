@@ -1,15 +1,5 @@
-#![feature(convert_float_to_int)]
-use bytes::*;
 use libm::modf;
-use math::*;
-use std::cmp::max;
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::convert::FloatToInt;
 use std::f64;
-use std::f64::consts::PI;
-use std::fmt;
-use std::string::String;
 
 pub fn min_max_float64_slice(v: &[f64]) -> (f64, f64) {
     let mut min = f64::INFINITY;
@@ -41,7 +31,7 @@ pub fn round(new_input: f64) -> f64 {
         abs_input *= -1.0;
     }
 
-    let (integer, decimal) = modf(abs_input);
+    let (_integer, decimal) = modf(abs_input);
     let rounded = if decimal >= 0.5 {
         f64::ceil(abs_input)
     } else {

@@ -4,17 +4,10 @@ use color::*;
 mod utility;
 use utility::*;
 mod options;
-use bytes::*;
-use libm::modf;
-use math::*;
 use options::*;
 use std::cmp::max;
-use std::cmp::Ordering;
-use std::collections::HashMap;
-use std::convert::FloatToInt;
 use std::f64;
 use std::f64::consts::PI;
-use std::fmt;
 use std::string::String;
 
 #[derive(Debug)]
@@ -150,7 +143,6 @@ fn plot(series: &[f64], options: Vec<Box<dyn GraphOption>>) -> String {
 }
 
 fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> String {
-    let mut log_maximum: f64 = 0.0;
     let (mut minimum, mut maximum) = (f64::INFINITY, f64::NEG_INFINITY);
     let mut config = Config {
         offset: 3,
@@ -160,7 +152,7 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
     config = configure(config, options);
     let mut len_max = 0;
     for i in data.iter() {
-        let mut l: i32 = i.len() as i32;
+        let l: i32 = i.len() as i32;
         if l > len_max {
             len_max = l;
         }
@@ -168,7 +160,7 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
     if config.width > 0 {
         for i in 0..data.len() {
             let mut temp_vec = data[i].to_vec();
-            for j in data[i].len()..len_max as usize {
+            for _j in data[i].len()..len_max as usize {
                 temp_vec.push(std::f64::NAN);
             }
             data[i] = interpolate_array(&temp_vec, config.width.try_into().unwrap());
@@ -211,9 +203,9 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
     let rows = (intmax2 - intmin2).abs();
     let width = len_max + config.offset;
     let mut plot: Vec<Vec<Cell>> = Vec::with_capacity(rows as usize + 1);
-    for i in 0..rows + 1 {
+    for _i in 0..rows + 1 {
         let mut line: Vec<Cell> = Vec::with_capacity(width as usize);
-        for j in 0..width {
+        for _j in 0..width {
             line.push(Cell {
                 text: " ".to_string(),
                 color: AnsiColor::Default,
@@ -262,7 +254,7 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
     }
 
     for i in 0..data.len() {
-        let mut series = &data[i];
+        let series = &data[i];
         let mut color = AnsiColor::Default;
         if i < config.series_colors.len() {
             color = config.series_colors[i];
@@ -275,8 +267,8 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
             plot[(rows - y0) as usize][(config.offset - 1) as usize].color = config.axis_color;
         }
         for x in 0..series.len() - 1 {
-            let mut d0 = series[x];
-            let mut d1 = series[x + 1];
+            let d0 = series[x];
+            let d1 = series[x + 1];
             if d0.is_nan() && d1.is_nan() {
                 continue;
             }
@@ -304,14 +296,14 @@ fn plot_many(data: &mut Vec<Vec<f64>>, options: Vec<Box<dyn GraphOption>>) -> St
                     plot[(rows - y1) as usize][x + config.offset as usize].text = "╭".to_owned();
                     plot[(rows - y0) as usize][x + config.offset as usize].text = "╯".to_owned();
                 }
-                let mut start = f64::min(y0 as f64, y1 as f64) as i32 + 1;
-                let mut end = f64::max(y0 as f64, y1 as f64) as i32;
+                let start = f64::min(y0 as f64, y1 as f64) as i32 + 1;
+                let end = f64::max(y0 as f64, y1 as f64) as i32;
                 for y in start..end {
                     plot[(rows - y) as usize][x + config.offset as usize].text = "│".to_owned();
                 }
             }
-            let mut start = f64::min(y0 as f64, y1 as f64) as i32;
-            let mut end = f64::max(y0 as f64, y1 as f64) as i32;
+            let start = f64::min(y0 as f64, y1 as f64) as i32;
+            let end = f64::max(y0 as f64, y1 as f64) as i32;
             for y in start..end {
                 plot[(rows - y) as usize][x + config.offset as usize].color = color;
             }
